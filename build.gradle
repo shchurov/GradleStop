@@ -1,0 +1,14 @@
+plugins {
+    id "org.jetbrains.intellij" version "0.1.10"
+}
+apply plugin: 'org.jetbrains.intellij'
+apply plugin: 'java'
+
+intellij {
+    pluginName 'Gradle Stop'
+    updateSinceUntilBuild false
+}
+
+repositories {
+    maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+}

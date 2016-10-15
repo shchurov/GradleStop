@@ -1,0 +1,35 @@
+<idea-plugin version="2">
+    <id>com.github.shchurov.gradlestop</id>
+    <name>Gradle Stop</name>
+    <version>1.0</version>
+    <vendor email="shchurov.m@gmail.com" url="https://github.com/shchurov/GradleStop">Mykhailo Shchurov</vendor>
+
+    <description><![CDATA[
+        A small plugin that allows you to stop any running Gradle process in one click.
+        For instance, it can help you cancel the building process.
+
+        After the installation you can find "Gradle Stop" button on Main Toolbar and inside Run Menu.
+
+        Please leave all your bug-reports and feature-requests on
+        <a href="https://github.com/shchurov/GradleStop">Github page</a>.
+    ]]></description>
+
+    <change-notes><![CDATA[
+    ]]>
+    </change-notes>
+
+    <idea-version since-build="143.1184"/>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <actions>
+        <action id="com.github.shchurov.gradlestop"
+                class="com.github.shchurov.gradlestop.GradleStopAction"
+                text="Gradle Stop"
+                icon="/icons/stop.png">
+            <add-to-group group-id="RunMenu" relative-to-action="Stop" anchor="after"/>
+            <add-to-group group-id="MainToolBar" relative-to-action="Stop" anchor="after"/>
+        </action>
+    </actions>
+
+</idea-plugin>
