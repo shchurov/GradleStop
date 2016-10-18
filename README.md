@@ -4,6 +4,8 @@ For instance, it can help you cancel the building process. Note that it requires
 
 After the installation you can find **Gradle Stop** button on **Main Toolbar** and inside **Run Menu**.
 
+**JetBrains Plugin Repository**: https://plugins.jetbrains.com/plugin/9187
+
 License
 -------
 
