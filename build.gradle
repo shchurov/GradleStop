@@ -8,7 +8,3 @@ intellij {
     pluginName 'Gradle Stop'
     updateSinceUntilBuild false
 }
-
-repositories {
-    maven { url 'https://repo.gradle.org/gradle/libs-releases' }
-}
