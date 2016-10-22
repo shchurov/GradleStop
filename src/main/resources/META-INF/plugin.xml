@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>com.github.shchurov.gradlestop</id>
     <name>Gradle Stop</name>
-    <version>1.0</version>
+    <version>1.1</version>
     <vendor email="shchurov.m@gmail.com" url="https://github.com/shchurov/GradleStop">Mykhailo Shchurov</vendor>
 
     <description><![CDATA[
@@ -29,7 +29,7 @@
                 text="Gradle Stop"
                 icon="/icons/stop.png">
             <add-to-group group-id="RunMenu" relative-to-action="Stop" anchor="after"/>
-            <add-to-group group-id="MainToolBar" relative-to-action="Stop" anchor="after"/>
+            <add-to-group group-id="ToolbarRunGroup" relative-to-action="Stop" anchor="after"/>
         </action>
     </actions>
 

@@ -7,18 +7,22 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class GradleStopAction extends AnAction {
 
     private static final String TITLE = "GradleStop";
     private static final String GITHUB_LINK = "https://github.com/shchurov/GradleStop";
+
+    private ExecutorService executor = Executors.newFixedThreadPool(2);
+    private Future stopTask;
+    private Process process;
 
     @Override
     public void actionPerformed(AnActionEvent action) {
@@ -26,13 +30,9 @@ public class GradleStopAction extends AnAction {
         String projectPath = project.getBasePath();
         File gradlewFile = new File(projectPath, isWindows() ? "gradlew.bat" : "gradlew");
         if (gradlewFile.exists()) {
-            try {
-                execute(gradlewFile.getPath() + " --stop", project);
-            } catch (IOException e) {
-                handleException(e);
-            }
+            runStopTask(gradlewFile.getPath());
         } else {
-            showErrorNotification(gradlewFile.getPath() + " not found");
+            showNotification(gradlewFile.getPath() + " not found", true);
         }
     }
 
@@ -40,30 +40,60 @@ public class GradleStopAction extends AnAction {
         return System.getProperty("os.name").startsWith("Windows");
     }
 
-    private String execute(String command, Project project) throws IOException {
-        ProgressManager pm = ProgressManager.getInstance();
-        return pm.runProcessWithProgressSynchronously(() -> {
-            pm.getProgressIndicator().setIndeterminate(true);
-            Process p = Runtime.getRuntime().exec(command);
-            BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.length() != 0) {
-                    sb.append(line).append("\n");
-                }
+    private void runStopTask(String gradlewPath) {
+        if (stopTask != null && !stopTask.isDone()) {
+            return;
+        }
+        stopTask = executor.submit(() -> {
+            boolean cancelled = destroyProcessIfRunning(process);
+            if (cancelled) {
+                showNotification("Re-executing stop command...", false);
+            } else {
+                showNotification("Executing stop command...", false);
             }
-            return sb.toString().trim();
-        }, TITLE, false, project);
+            try {
+                process = Runtime.getRuntime().exec(gradlewPath + " --stop");
+                runResultListenerTask(process);
+            } catch (IOException e) {
+                handleUnexpectedException(e);
+            }
+        });
     }
 
-    private void handleException(Exception e) {
+    private boolean destroyProcessIfRunning(Process p) {
+        if (p != null && p.isAlive()) {
+            p.destroyForcibly();
+            try {
+                p.waitFor();
+                return true;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    private void runResultListenerTask(final Process p) {
+        executor.execute(() -> {
+            try {
+                p.waitFor();
+                if (p.exitValue() == 0) {
+                    showNotification("Done", false);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void handleUnexpectedException(Exception e) {
         String message = "I would really appreciate if you file this issue here: " + GITHUB_LINK + "\n";
         PluginManager.getLogger().error(message, e);
     }
 
-    private void showErrorNotification(String text) {
-        Notification n = new Notification("com.github.shchurov.gradlestop", TITLE, text, NotificationType.ERROR);
+    private void showNotification(String text, boolean error) {
+        Notification n = new Notification("com.github.shchurov.gradlestop", TITLE, text,
+                error ? NotificationType.ERROR : NotificationType.INFORMATION);
         Notifications.Bus.notify(n);
     }
 
