@@ -1,6 +1,7 @@
 # GradleStop
-A small plugin that allows you to stop any running Gradle process in one click.
-For instance, it can help you cancel the building process. Note that it requires you to have **gradlew** executable in the project directory (it's there by default when using Android Studio).
+A small plugin that allows you to stop running Gradle process in one click.
+For instance, it can help you cancel the building process. Basically it's a one-click shortcut for "gradlew --stop".
+Note that it requires you to have **gradlew** executable in the project directory (it's there by default when using Android Studio).
 
 After the installation you can find **Gradle Stop** button on **Main Toolbar** and inside **Run Menu**.
 
