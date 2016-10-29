@@ -1,5 +1,5 @@
 # GradleStop
-A small plugin that allows you to stop running Gradle process in one click.
+A small plugin for IntelliJ IDEs that allows you to stop running Gradle process in one click.
 For instance, it can help you cancel the building process. Basically it's a one-click shortcut for `gradlew --stop`.
 Note that it requires you to have **gradlew** executable in the project directory (it's there by default when using Android Studio).
 
